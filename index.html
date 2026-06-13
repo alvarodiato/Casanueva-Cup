@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casanueva Cup — Quiniela Mundial 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pitch:#0B3D2E; --pitch2:#0E4A38; --pitch3:#11553F;
+  --chalk:#F7F5EF; --chalk-dim:#CFE0D6;
+  --gold:#D4A53C; --gold-soft:#E8C878;
+  --ink:#122019; --line:rgba(247,245,239,.16);
+  --ok:#3FA66A; --mid:#D4A53C; --bad:#C75148; --pend:#5C7268;
+  --card:#0F4434;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Barlow',system-ui,-apple-system,sans-serif;
+  background:var(--pitch);
+  background-image:repeating-linear-gradient(90deg, rgba(255,255,255,.022) 0 90px, rgba(255,255,255,0) 90px 180px);
+  color:var(--chalk);
+  min-height:100vh;
+  font-size:15px;
+  line-height:1.45;
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 14px 80px}
+
+header{padding:26px 0 14px;text-align:center;border-bottom:2px solid var(--line)}
+.cup-eyebrow{font-family:'Barlow Condensed';font-weight:600;letter-spacing:.32em;font-size:12px;color:var(--gold);text-transform:uppercase}
+h1{font-family:'Barlow Condensed';font-weight:800;font-size:clamp(34px,7vw,56px);letter-spacing:.02em;line-height:1.02;margin:6px 0 4px;text-transform:uppercase}
+h1 .ball{font-size:.7em;vertical-align:.12em}
+.subtitle{color:var(--chalk-dim);font-size:14px}
+.statusbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0 2px}
+.pill{font-family:'Barlow Condensed';font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:5px 14px;color:var(--chalk-dim)}
+.pill b{color:var(--gold-soft)}
+.pill.live b{color:#fff}
+
+nav{position:sticky;top:0;z-index:50;background:linear-gradient(var(--pitch) 75%,rgba(11,61,46,.94));backdrop-filter:blur(4px);margin:0 -14px;padding:10px 14px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.tab{font-family:'Barlow Condensed';font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--chalk-dim);cursor:pointer}
+.tab:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tab.on{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+section{display:none;padding-top:18px}
+section.on{display:block}
+h2{font-family:'Barlow Condensed';font-weight:700;font-size:22px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-soft);margin:8px 0 12px}
+.note{color:var(--chalk-dim);font-size:13.5px;margin:-6px 0 14px}
+
+.board{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)}
+.brow{display:grid;grid-template-columns:44px 1fr 64px 52px 52px;align-items:center;gap:6px;padding:9px 12px;border-top:1px solid var(--line);cursor:pointer}
+.brow:first-child{border-top:none}
+.brow:hover{background:var(--pitch3)}
+.brow .pos{font-family:'Barlow Condensed';font-weight:700;font-size:18px;color:var(--chalk-dim);text-align:center}
+.brow .pos.medal{font-size:20px}
+.brow .pname{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brow .pname small{display:block;font-weight:400;font-size:11.5px;color:var(--chalk-dim)}
+.scoretile{font-family:'Barlow Condensed';font-weight:800;font-size:22px;text-align:center;background:#08291F;border:1px solid var(--line);border-radius:8px;padding:3px 0;color:var(--gold-soft);font-variant-numeric:tabular-nums}
+.statmini{font-family:'Barlow Condensed';font-weight:600;font-size:15px;text-align:center;color:var(--chalk-dim);font-variant-numeric:tabular-nums}
+.bhead{display:grid;grid-template-columns:44px 1fr 64px 52px 52px;gap:6px;padding:8px 12px 6px;font-family:'Barlow Condensed';font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--chalk-dim);background:#093125}
+.bhead span{text-align:center}.bhead span:nth-child(2){text-align:left}
+
+.daygroup{margin-bottom:18px}
+.dayhead{font-family:'Barlow Condensed';font-weight:700;font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-soft);border-bottom:1px solid var(--line);padding-bottom:5px;margin-bottom:8px}
+.match{border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:8px;overflow:hidden}
+.mrow{display:grid;grid-template-columns:34px 1fr 86px 1fr 28px;align-items:center;gap:4px;padding:10px 10px;cursor:pointer}
+.mrow:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.mnum{font-family:'Barlow Condensed';font-weight:600;font-size:13px;color:var(--chalk-dim);text-align:center}
+.mnum b{display:block;font-size:14px;color:var(--gold-soft)}
+.team{font-weight:600;font-size:14.5px;line-height:1.15}
+.team.home{text-align:right}
+.mscore{font-family:'Barlow Condensed';font-weight:800;font-size:23px;text-align:center;font-variant-numeric:tabular-nums;background:#08291F;border:1px solid var(--line);border-radius:8px;padding:2px 0}
+.mscore.pend{font-size:14px;font-weight:600;color:var(--chalk-dim);letter-spacing:.04em}
+.chev{color:var(--chalk-dim);text-align:center;font-size:12px;transition:transform .15s}
+.match.open .chev{transform:rotate(180deg)}
+.mmeta{padding:0 12px 8px;font-size:12px;color:var(--chalk-dim)}
+.mdetail{display:none;border-top:1px solid var(--line);background:#0A352A;padding:10px 12px 12px}
+.match.open .mdetail{display:block}
+.pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.pick{display:flex;justify-content:space-between;align-items:center;gap:6px;border-radius:8px;padding:5px 9px;font-size:12.5px;background:#0F4434;border:1px solid var(--line)}
+.pick .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--chalk-dim)}
+.pick .sc{font-family:'Barlow Condensed';font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
+.pick.p3{border-color:var(--ok)}.pick.p3 .sc{color:#7BD9A2}
+.pick.p1{border-color:var(--mid)}.pick.p1 .sc{color:var(--gold-soft)}
+.pick.p0{border-color:rgba(199,81,72,.55)}.pick.p0 .sc{color:#E2978F}
+.pick.pp .sc{color:var(--chalk-dim)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--chalk-dim);margin:4px 0 14px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.legend .l3 i{background:var(--ok)}.legend .l1 i{background:var(--mid)}.legend .l0 i{background:var(--bad)}.legend .lp i{background:var(--pend)}
+
+.personpick{width:100%;font-family:'Barlow';font-size:16px;font-weight:600;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--chalk);margin-bottom:14px;-webkit-appearance:none;appearance:none}
+.pcard{border:1px solid var(--gold);border-radius:14px;background:var(--card);padding:14px;margin-bottom:14px}
+.pcard h3{font-family:'Barlow Condensed';font-weight:800;font-size:24px;letter-spacing:.03em;text-transform:uppercase;margin-bottom:8px}
+.pstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pstat{background:#08291F;border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center}
+.pstat b{display:block;font-family:'Barlow Condensed';font-weight:800;font-size:24px;color:var(--gold-soft);font-variant-numeric:tabular-nums}
+.pstat span{font-family:'Barlow Condensed';font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--chalk-dim)}
+.pchamp{margin-top:10px;font-size:13.5px;color:var(--chalk-dim)}
+.pchamp b{color:var(--gold-soft)}
+table.ptable{width:100%;border-collapse:collapse;font-size:13px}
+.ptable th{font-family:'Barlow Condensed';font-weight:600;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--chalk-dim);text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}
+.ptable td{padding:7px 6px;border-bottom:1px solid rgba(247,245,239,.07);vertical-align:top}
+.ptable .num{font-variant-numeric:tabular-nums;font-family:'Barlow Condensed';font-weight:700;font-size:14.5px;white-space:nowrap}
+.ptable .pts3{color:#7BD9A2}.ptable .pts1{color:var(--gold-soft)}.ptable .pts0{color:#E2978F}.ptable .ptsP{color:var(--pend)}
+.tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.tscroll table{min-width:560px}
+.tscroll .ptable th{position:sticky;top:0;background:#093125}
+
+.champgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.champcard{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:12px}
+.champcard h3{font-family:'Barlow Condensed';font-weight:800;font-size:20px;letter-spacing:.04em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:baseline}
+.champcard h3 small{font-size:14px;color:var(--gold-soft);font-weight:700}
+.champcard p{font-size:13px;color:var(--chalk-dim);margin-top:5px;line-height:1.5}
+.champcard.win{border-color:var(--gold)}
+
+.rules{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:16px}
+.rules h3{font-family:'Barlow Condensed';font-weight:700;font-size:17px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-soft);margin:14px 0 6px}
+.rules h3:first-child{margin-top:0}
+.rules p{font-size:14px;color:var(--chalk-dim);margin-bottom:6px}
+.rules .bigpt{font-family:'Barlow Condensed';font-weight:800;font-size:20px;color:var(--chalk);margin-right:4px}
+
+/* ---------- capturar ---------- */
+#capgate{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:20px;text-align:center}
+#capgate input{font-family:'Barlow Condensed';font-weight:700;font-size:24px;letter-spacing:.3em;text-align:center;width:160px;padding:8px;border-radius:10px;border:1px solid var(--line);background:#08291F;color:var(--chalk);margin:10px 0}
+#capbody{display:none}
+.captools{position:sticky;top:52px;z-index:40;background:var(--pitch);margin:0 -14px;padding:8px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line)}
+.btn{font-family:'Barlow Condensed';font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;background:var(--gold);color:var(--ink);border:none;border-radius:10px;padding:10px 16px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--chalk-dim);border:1px solid var(--line)}
+.btn:focus-visible{outline:2px solid var(--chalk);outline-offset:2px}
+#savemsg{font-size:13px;color:#7BD9A2;font-weight:600}
+.caprow{display:grid;grid-template-columns:30px 1fr 52px 14px 52px;gap:6px;align-items:center;margin-bottom:6px;font-size:13px}
+.caprow input{width:100%;padding:8px 4px;text-align:center;font-family:'Barlow Condensed';font-weight:700;font-size:18px;border-radius:8px;border:1px solid var(--line);background:#08291F;color:var(--chalk)}
+.caprow input:not(:placeholder-shown){border-color:var(--gold)}
+.caprow .dash{text-align:center;color:var(--chalk-dim)}
+.caprow .lbl{font-size:12.5px;line-height:1.2}
+.caprow .lbl small{color:var(--chalk-dim)}
+.capday{font-family:'Barlow Condensed';font-weight:700;font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-soft);margin:16px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+#capchamp{font-size:15px;padding:10px;border-radius:8px;border:1px solid var(--line);background:#08291F;color:var(--chalk);width:100%;margin-top:6px}
+#capcode{width:100%;min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#08291F;color:#BFE3CE;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;display:none}
+.capnote{font-size:12.5px;color:var(--chalk-dim);margin-top:10px;line-height:1.5}
+
+footer{margin-top:34px;text-align:center;font-size:12px;color:var(--chalk-dim);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:560px){
+  .pickgrid{grid-template-columns:1fr 1fr}
+  .brow,.bhead{grid-template-columns:36px 1fr 56px 44px 44px}
+  .pstats{grid-template-columns:repeat(2,1fr)}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="cup-eyebrow">Quiniela Mundial 2026</div>
+  <h1><span class="ball">⚽</span> Casanueva Cup</h1>
+  <div class="subtitle">México · Estados Unidos · Canadá — Fase de grupos</div>
+  <div class="statusbar">
+    <span class="pill">Jugados <b id="stat-played">0</b> / 72</span>
+    <span class="pill">Participantes <b>27</b></span>
+    <span class="pill live" id="stat-update"></span>
+  </div>
+</header>
+
+<nav id="tabs" role="tablist">
+  <button class="tab on" data-t="clasif" role="tab">🏆 Clasificación</button>
+  <button class="tab" data-t="partidos" role="tab">📅 Partidos</button>
+  <button class="tab" data-t="persona" role="tab">👤 Por persona</button>
+  <button class="tab" data-t="campeon" role="tab">🥇 Campeón</button>
+  <button class="tab" data-t="reglas" role="tab">📜 Reglas</button>
+  <button class="tab" data-t="capturar" role="tab">✏️ Capturar</button>
+</nav>
+
+<section id="clasif" class="on">
+  <h2>Tabla general</h2>
+  <p class="note">Toca a un participante para ver su quiniela completa. Desempate: puntos → marcadores exactos → orden alfabético.</p>
+  <div class="bhead"><span>Pos</span><span>Participante</span><span>Pts</span><span>3pt</span><span>1pt</span></div>
+  <div class="board" id="boardbody"></div>
+</section>
+
+<section id="partidos">
+  <h2>Calendario y resultados</h2>
+  <p class="note">Toca un partido para ver los pronósticos de todos.</p>
+  <div class="legend">
+    <span class="l3"><i></i>3 pts — marcador exacto</span>
+    <span class="l1"><i></i>1 pt — acertó resultado</span>
+    <span class="l0"><i></i>0 pts</span>
+    <span class="lp"><i></i>Por jugarse</span>
+  </div>
+  <div id="matchlist"></div>
+</section>
+
+<section id="persona">
+  <h2>Quiniela por persona</h2>
+  <select id="personsel" class="personpick" aria-label="Elegir participante"></select>
+  <div id="personcard"></div>
+  <div class="tscroll"><table class="ptable" id="persontable"></table></div>
+</section>
+
+<section id="campeon">
+  <h2>Apuestas a campeón <span style="font-size:14px;color:var(--chalk-dim)">(+10 pts)</span></h2>
+  <p class="note" id="champnote">El bono se suma cuando termine el Mundial.</p>
+  <div class="champgrid" id="champgrid"></div>
+</section>
+
+<section id="reglas">
+  <h2>Reglas de la Casanueva Cup</h2>
+  <div class="rules">
+    <h3>Puntuación por partido</h3>
+    <p><span class="bigpt">3 pts</span> Marcador exacto (goles de local y visitante).</p>
+    <p><span class="bigpt">1 pt</span> Acertar el resultado (victoria local, empate o victoria visitante) sin el marcador exacto.</p>
+    <p><span class="bigpt">0 pts</span> Resultado equivocado o sin pronóstico capturado.</p>
+    <h3>Bono campeón</h3>
+    <p><span class="bigpt">10 pts</span> Por acertar al campeón del Mundial. Se acreditan al terminar la final.</p>
+    <h3>Desempate</h3>
+    <p>1) Más puntos totales · 2) Más marcadores exactos · 3) Orden alfabético.</p>
+    <h3>Actualización</h3>
+    <p>La tabla se actualiza todos los días después de cada jornada con los marcadores oficiales de los 72 partidos de fase de grupos.</p>
+  </div>
+</section>
+
+<section id="capturar">
+  <h2>Captura de resultados</h2>
+  <div id="capgate">
+    <p>Esta sección es para el administrador de la quiniela.</p>
+    <input type="password" id="pinbox" inputmode="numeric" maxlength="6" placeholder="••••" aria-label="Clave de acceso">
+    <br><button class="btn" id="pinbtn">Entrar</button>
+    <p id="pinerr" style="color:#E2978F;font-size:13px;margin-top:8px;visibility:hidden">Clave incorrecta</p>
+  </div>
+  <div id="capbody">
+    <div class="captools">
+      <button class="btn" id="savebtn">💾 Guardar resultados</button>
+      <button class="btn ghost" id="dlbtn">⬇️ Descargar HTML actualizado</button>
+      <span id="savemsg"></span>
+    </div>
+    <p class="capnote" id="storagemode"></p>
+    <div id="caprows"></div>
+    <div class="capday">Campeón del Mundial (al terminar la final)</div>
+    <select id="capchamp"><option value="">— Aún no hay campeón —</option></select>
+    <textarea id="capcode" readonly aria-label="Código de respaldo"></textarea>
+    <p class="capnote">Al guardar, toda la página (clasificación, partidos, detalle por persona) se recalcula al instante. El botón <b>Descargar HTML actualizado</b> genera una copia de esta misma página con los marcadores ya integrados en el archivo — útil como respaldo o para volver a subirla a tu hosting.</p>
+  </div>
+</section>
+
+<footer>
+  Casanueva Cup · Quiniela Mundial 2026 · 27 participantes · 72 partidos de fase de grupos
+</footer>
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN DEL ADMINISTRADOR
+   ------------------------------------------------------------
+   1) CLAVE_CAPTURA: clave para abrir la pestaña "Capturar".
+
+   2) BACKEND_URL: ⭐ PARA GITHUB PAGES, pega aquí la URL de tu
+      base de datos de Firebase para que los resultados se
+      guarden en la nube, para siempre y compartidos con todos.
+      Déjala vacía ("") si publicas como enlace de Claude.
+      Ejemplo:
+      const BACKEND_URL = "https://tuproyecto-default-rtdb.firebasedatabase.app";
+      (Pasos de configuración al final de este archivo.)
+
+   3) RESULTADOS_BASE / CAMPEON_BASE: respaldo escrito en el
+      archivo. Normalmente no los tocas; se reescriben solos al
+      usar "Descargar HTML actualizado".
+   ============================================================ */
+const CLAVE_CAPTURA = "2026";
+const BACKEND_URL = "";   // ⭐ pega aquí tu URL de Firebase para GitHub Pages
+const RESULTADOS_BASE = {
+  1:[2,0],
+};
+const CAMPEON_BASE = null;
+/* ============================================================ */
+
+const DATA = {"participants":["Pepin","Abui","Pepe","Clau","Pau","Alvaro DTA","Diego","Rodrigo Casanueva Andrade primero de su nombre","Anto","Raul","María","Cava","Amaya","Ema","Alvaro RC","Andrea R","Pablo","Iker","Mica","Kiko","Peyotinho","Almu","Ana CP","Charger Diabólico + Diego","Maite C","Ángel CC","Daniela"],"matches":[[1,"A","Jue 11 Jun","13:00","Estadio Ciudad de México","México","Sudáfrica"],[2,"A","Jue 11 Jun","20:00","Estadio Guadalajara","República de Corea","República Checa"],[3,"B","Vie 12 Jun","13:00","Estadio Toronto","Canadá","Bosnia y Herzegovina"],[4,"D","Vie 12 Jun","19:00","Estadio Los Ángeles","Estados Unidos","Paraguay"],[5,"D","Vie 12 Jun","22:00","BC Place Vancouver","Australia","Turquía"],[6,"B","Sáb 13 Jun","13:00","Estadio San Francisco","Catar","Suiza"],[7,"C","Sáb 13 Jun","16:00","Estadio Nueva York/NJ","Brasil","Marruecos"],[8,"C","Sáb 13 Jun","19:00","Estadio Boston","Haití","Escocia"],[9,"E","Dom 14 Jun","11:00","Estadio Houston","Alemania","Curazao"],[10,"F","Dom 14 Jun","14:00","Estadio Dallas","Países Bajos","Japón"],[11,"E","Dom 14 Jun","17:00","Estadio Filadelfia","Costa de Marfil","Ecuador"],[12,"F","Dom 14 Jun","20:00","Estadio Monterrey","Suecia","Túnez"],[13,"H","Lun 15 Jun","10:00","Estadio Atlanta","España","Cabo Verde"],[14,"G","Lun 15 Jun","13:00","Estadio Seattle","Bélgica","Egipto"],[15,"H","Lun 15 Jun","16:00","Estadio Miami","Arabia Saudita","Uruguay"],[16,"G","Lun 15 Jun","19:00","Estadio Los Ángeles","Irán","Nueva Zelanda"],[17,"J","Lun 15 Jun","22:00","Estadio San Francisco","Austria","Jordania"],[18,"I","Mar 16 Jun","13:00","Estadio Nueva York/NJ","Francia","Senegal"],[19,"I","Mar 16 Jun","16:00","Estadio Boston","Irak","Noruega"],[20,"J","Mar 16 Jun","19:00","Estadio Kansas City","Argentina","Argelia"],[21,"K","Mié 17 Jun","11:00","Estadio Houston","Portugal","Rep. Dem. del Congo"],[22,"L","Mié 17 Jun","14:00","Estadio Dallas","Inglaterra","Croacia"],[23,"L","Mié 17 Jun","17:00","Estadio Toronto","Ghana","Panamá"],[24,"K","Mié 17 Jun","20:00","Estadio Ciudad de México","Uzbekistán","Colombia"],[25,"A","Jue 18 Jun","10:00","Estadio Atlanta","República Checa","Sudáfrica"],[26,"B","Jue 18 Jun","13:00","Estadio Los Ángeles","Suiza","Bosnia y Herzegovina"],[27,"B","Jue 18 Jun","16:00","BC Place Vancouver","Canadá","Catar"],[28,"A","Jue 18 Jun","19:00","Estadio Guadalajara","México","República de Corea"],[29,"D","Vie 19 Jun","13:00","Estadio Seattle","Estados Unidos","Australia"],[30,"C","Vie 19 Jun","16:00","Estadio Boston","Escocia","Marruecos"],[31,"C","Vie 19 Jun","19:00","Estadio Filadelfia","Brasil","Haití"],[32,"D","Vie 19 Jun","21:00","Estadio San Francisco","Turquía","Paraguay"],[33,"F","Vie 19 Jun","22:00","Estadio Monterrey","Túnez","Japón"],[34,"F","Sáb 20 Jun","11:00","Estadio Houston","Países Bajos","Suecia"],[35,"E","Sáb 20 Jun","14:00","Estadio Toronto","Alemania","Costa de Marfil"],[36,"E","Sáb 20 Jun","18:00","Estadio Kansas City","Ecuador","Curazao"],[37,"H","Dom 21 Jun","10:00","Estadio Atlanta","España","Arabia Saudita"],[38,"G","Dom 21 Jun","13:00","Estadio Los Ángeles","Bélgica","Irán"],[39,"H","Dom 21 Jun","16:00","Estadio Miami","Uruguay","Cabo Verde"],[40,"G","Dom 21 Jun","19:00","BC Place Vancouver","Nueva Zelanda","Egipto"],[41,"J","Lun 22 Jun","11:00","Estadio Dallas","Argentina","Austria"],[42,"I","Lun 22 Jun","15:00","Estadio Filadelfia","Francia","Irak"],[43,"I","Lun 22 Jun","18:00","Estadio Nueva York/NJ","Noruega","Senegal"],[44,"J","Lun 22 Jun","21:00","Estadio San Francisco","Jordania","Argelia"],[45,"K","Mar 23 Jun","11:00","Estadio Houston","Portugal","Uzbekistán"],[46,"L","Mar 23 Jun","14:00","Estadio Boston","Inglaterra","Ghana"],[47,"L","Mar 23 Jun","17:00","Estadio Toronto","Panamá","Croacia"],[48,"K","Mar 23 Jun","20:00","Estadio Guadalajara","Colombia","Rep. Dem. del Congo"],[49,"B","Mié 24 Jun","13:00","BC Place Vancouver","Suiza","Canadá"],[50,"B","Mié 24 Jun","13:00","Estadio Seattle","Bosnia y Herzegovina","Catar"],[51,"C","Mié 24 Jun","16:00","Estadio Miami","Escocia","Brasil"],[52,"C","Mié 24 Jun","16:00","Estadio Atlanta","Marruecos","Haití"],[53,"A","Mié 24 Jun","19:00","Estadio Ciudad de México","República Checa","México"],[54,"A","Mié 24 Jun","19:00","Estadio Monterrey","Sudáfrica","República de Corea"],[55,"E","Jue 25 Jun","14:00","Estadio Filadelfia","Curazao","Costa de Marfil"],[56,"E","Jue 25 Jun","14:00","Estadio Nueva York/NJ","Ecuador","Alemania"],[57,"F","Jue 25 Jun","17:00","Estadio Dallas","Japón","Suecia"],[58,"F","Jue 25 Jun","17:00","Estadio Kansas City","Túnez","Países Bajos"],[59,"D","Jue 25 Jun","20:00","Estadio Los Ángeles","Turquía","Estados Unidos"],[60,"D","Jue 25 Jun","20:00","Estadio San Francisco","Paraguay","Australia"],[61,"I","Vie 26 Jun","13:00","Estadio Boston","Noruega","Francia"],[62,"I","Vie 26 Jun","13:00","Estadio Toronto","Senegal","Irak"],[63,"H","Vie 26 Jun","18:00","Estadio Houston","Cabo Verde","Arabia Saudita"],[64,"H","Vie 26 Jun","18:00","Estadio Guadalajara","Uruguay","España"],[65,"G","Vie 26 Jun","21:00","Estadio Seattle","Egipto","Irán"],[66,"G","Vie 26 Jun","21:00","BC Place Vancouver","Nueva Zelanda","Bélgica"],[67,"L","Sáb 27 Jun","15:00","Estadio Nueva York/NJ","Panamá","Inglaterra"],[68,"L","Sáb 27 Jun","15:00","Estadio Filadelfia","Croacia","Ghana"],[69,"K","Sáb 27 Jun","17:30","Estadio Miami","Colombia","Portugal"],[70,"K","Sáb 27 Jun","17:30","Estadio Atlanta","Rep. Dem. del Congo","Uzbekistán"],[71,"J","Sáb 27 Jun","20:00","Estadio Kansas City","Argelia","Austria"],[72,"J","Sáb 27 Jun","20:00","Estadio Dallas","Jordania","Argentina"]],"preds":[[[2,0],[1,0],[2,0],[2,0],[2,0],[2,0],[3,0],[3,1],[2,0],[2,1],[1,0],[2,0],[2,1],[2,0],[3,0],[3,1],[2,0],[2,0],[2,0],[2,0],[3,0],[2,1],[3,2],[2,0],[1,1],[2,1],[1,0]],[[2,0],[1,2],[1,1],[1,1],[1,1],[1,1],[0,2],[1,1],[1,1],[1,0],[0,1],[1,1],[1,1],[1,1],[2,1],[1,0],[2,1],[1,0],[2,1],[1,1],[1,1],[1,1],[1,2],[1,1],[2,2],[3,1],[1,2]],[[2,0],[3,1],[2,1],[2,0],[2,1],[2,1],[2,0],[1,0],[1,0],[0,2],[2,0],[2,1],[1,0],[1,2],[2,1],[3,0],[2,0],[1,1],[1,0],[2,1],[2,1],[2,0],[1,3],[2,1],[3,2],[3,1],[3,2]],[[2,0],[2,3],[2,1],[2,1],[2,1],[2,1],[2,1],[2,1],[2,0],[1,2],[1,1],[3,0],[0,2],[2,1],[2,1],[4,1],[1,1],[0,0],[1,0],[2,1],[3,1],[0,2],[1,3],[1,2],[1,1],[0,0],[1,1]],[[1,1],[2,2],[1,1],[1,1],[1,2],[1,2],[1,0],[0,2],[0,1],[1,1],[2,1],[1,3],[1,0],[0,2],[1,2],[0,2],[1,1],[0,1],[0,0],[1,1],[0,2],[1,2],[3,3],[1,1],[2,4],[0,2],[1,0]],[[0,1],[1,3],[0,2],[0,2],[0,2],[0,2],[1,3],[0,2],[0,2],[2,1],[1,2],[0,4],[1,2],[0,2],[0,3],[0,2],[0,2],[0,2],[1,0],[0,2],[0,2],[0,2],[2,4],[1,2],[0,3],[1,1],[3,2]],[[3,0],[3,0],[3,1],[2,1],[2,1],[2,1],[3,1],[3,0],[2,1],[2,0],[3,1],[1,2],[4,2],[2,1],[1,1],[2,1],[2,1],[1,0],[3,0],[2,1],[3,2],[1,1],[4,1],[2,1],[4,0],[3,1],[2,1]],[[0,2],[0,2],[0,2],[0,2],[0,2],[0,1],[1,1],[1,1],[0,1],[0,2],[1,2],[0,3],[0,1],[0,4],[0,2],[0,2],[1,2],[0,4],[1,1],[0,2],[0,1],[0,1],[1,2],[0,2],[2,2],[1,1],[2,2]],[[3,1],[3,0],[4,0],[4,0],[4,0],[3,0],[3,1],[2,0],[3,0],[3,0],[4,0],[4,0],[1,0],[4,0],[4,0],[4,0],[3,0],[3,0],[2,1],[5,1],[4,0],[3,1],[4,1],[4,0],[1,1],[3,0],[3,1]],[[1,0],[2,1],[2,1],[3,1],[2,1],[2,1],[2,0],[1,2],[1,1],[1,1],[2,1],[1,1],[2,2],[1,1],[1,1],[1,0],[1,1],[1,0],[1,1],[2,1],[3,2],[1,0],[3,3],[2,1],[0,3],[2,1],[2,1]],[[2,1],[0,3],[1,1],[1,1],[1,1],[1,2],[1,1],[0,2],[0,1],[0,1],[0,1],[1,2],[0,0],[1,2],[1,1],[0,2],[1,2],[1,2],[0,2],[1,1],[0,1],[1,1],[3,2],[1,2],[0,4],[0,3],[0,1]],[[1,1],[2,1],[2,0],[1,2],[2,0],[2,0],[2,1],[1,0],[0,0],[1,0],[1,0],[1,0],[1,1],[2,1],[1,1],[2,0],[2,0],[2,1],[1,0],[1,0],[2,0],[1,0],[2,2],[1,1],[2,1],[0,1],[1,0]],[[2,0],[3,0],[3,0],[3,0],[3,0],[3,0],[3,0],[3,0],[3,0],[3,0],[3,1],[3,0],[4,1],[3,0],[4,0],[4,0],[3,0],[3,0],[2,0],[4,0],[4,0],[3,0],[3,1],[3,1],[5,0],[4,1],[3,1]],[[1,1],[4,1],[2,0],[2,0],[2,1],[2,1],[2,0],[2,0],[3,0],[2,0],[3,1],[0,1],[3,0],[2,0],[2,1],[1,0],[2,0],[1,0],[2,1],[1,1],[2,1],[2,1],[3,2],[2,1],[1,0],[2,0],[1,0]],[[1,2],[1,3],[0,2],[0,2],[0,2],[0,2],[0,2],[0,2],[0,2],[1,0],[1,2],[0,2],[0,2],[0,2],[0,2],[1,3],[1,2],[0,1],[0,1],[0,1],[0,2],[1,2],[1,4],[0,1],[2,2],[0,1],[1,2]],[[2,2],[1,1],[1,0],[2,0],[1,1],[2,0],[0,1],[0,1],[2,0],[1,1],[2,0],[1,1],[1,2],[1,2],[1,1],[0,1],[2,2],[0,1],[1,1],[1,0],[0,1],[2,1],[2,2],[1,0],[1,0],[0,1],[1,2]],[[2,0],[3,1],[2,0],[2,1],[2,0],[2,0],[0,0],[1,0],[1,0],[1,0],[1,0],[0,1],[1,0],[2,0],[2,0],[2,0],[2,1],[2,0],[1,0],[2,0],[2,0],[1,0],[2,1],[1,0],[1,1],[0,0],[1,0]],[[3,1],[4,1],[2,1],[2,0],[2,1],[2,1],[2,0],[3,1],[3,0],[2,0],[3,0],[2,0],[3,0],[3,1],[2,1],[3,1],[2,1],[2,0],[2,1],[2,1],[3,1],[2,0],[3,1],[2,1],[1,2],[2,0],[3,1]],[[2,2],[1,3],[0,2],[0,3],[1,2],[0,2],[1,3],[1,2],[0,1],[1,1],[1,3],[0,2],[0,1],[1,1],[0,3],[0,2],[0,2],[0,1],[0,1],[0,3],[0,2],[1,1],[2,3],[1,2],[1,1],[0,2],[1,0]],[[3,0],[4,1],[3,0],[3,0],[3,0],[3,0],[3,0],[2,0],[2,0],[2,0],[2,1],[3,1],[2,1],[2,0],[2,0],[3,0],[2,1],[2,0],[3,0],[2,0],[2,0],[2,0],[4,1],[3,1],[3,0],[3,1],[2,1]],[[3,0],[3,0],[3,0],[4,0],[3,0],[3,0],[2,0],[3,1],[2,0],[3,0],[2,0],[2,0],[3,0],[3,0],[3,0],[4,0],[3,0],[2,0],[2,0],[3,0],[4,0],[2,0],[4,2],[2,0],[4,0],[4,1],[2,0]],[[2,0],[3,0],[2,1],[1,1],[2,1],[2,1],[2,2],[2,1],[2,1],[2,1],[2,1],[2,0],[1,2],[3,1],[2,1],[3,1],[2,1],[1,1],[1,1],[2,1],[2,1],[2,1],[3,2],[2,1],[1,1],[1,1],[2,1]],[[3,1],[0,2],[2,1],[1,2],[2,1],[2,1],[1,0],[0,1],[0,1],[0,1],[1,0],[1,1],[2,0],[2,0],[2,0],[1,1],[1,2],[1,0],[0,1],[1,0],[1,0],[0,2],[3,3],[3,1],[1,2],[1,2],[2,1]],[[1,2],[0,3],[1,2],[0,3],[0,2],[0,2],[0,2],[0,2],[0,2],[0,1],[0,2],[0,2],[0,1],[0,2],[0,2],[0,3],[1,2],[0,2],[1,2],[0,2],[0,2],[1,2],[2,4],[1,3],[0,2],[0,2],[0,2]],[[2,1],[2,1],[1,1],[1,1],[1,0],[2,1],[0,2],[0,1],[0,1],[0,1],[1,2],[0,2],[2,1],[0,0],[1,0],[1,1],[2,1],[1,0],[0,0],[1,0],[1,0],[2,1],[3,3],[1,0],[0,0],[0,1],[0,0]],[[1,0],[3,2],[2,1],[2,0],[2,0],[2,0],[2,1],[1,0],[1,0],[1,0],[0,1],[2,0],[2,0],[1,1],[1,0],[2,1],[2,1],[2,0],[1,0],[1,1],[2,1],[2,1],[2,2],[2,1],[2,0],[2,1],[2,1]],[[3,1],[2,0],[1,1],[2,1],[1,1],[2,0],[2,0],[2,0],[1,0],[1,1],[1,1],[1,0],[1,1],[2,0],[2,0],[2,0],[2,0],[2,1],[2,0],[3,0],[2,0],[1,0],[3,1],[1,0],[1,1],[2,0],[1,0]],[[2,1],[2,1],[2,1],[2,1],[2,1],[2,1],[2,1],[2,1],[2,1],[1,1],[1,2],[3,1],[1,1],[2,1],[2,1],[2,0],[2,1],[1,1],[1,0],[1,0],[2,1],[2,0],[4,1],[2,1],[2,0],[2,1],[2,1]],[[2,1],[2,2],[2,1],[2,0],[2,1],[2,0],[1,0],[2,1],[2,0],[1,1],[1,2],[2,1],[1,1],[2,2],[2,1],[2,0],[2,1],[2,0],[1,0],[2,0],[2,1],[2,1],[2,3],[1,1],[3,3],[2,2],[2,2]],[[1,0],[3,1],[1,1],[0,2],[1,2],[0,1],[0,2],[1,1],[1,2],[1,0],[0,2],[0,2],[0,2],[1,2],[0,1],[1,2],[1,2],[0,1],[0,0],[0,1],[0,2],[1,2],[4,4],[1,2],[4,2],[0,0],[1,0]],[[3,0],[4,0],[3,0],[3,0],[4,0],[3,0],[2,0],[2,0],[3,0],[3,0],[2,0],[4,0],[3,0],[5,0],[4,0],[3,0],[4,0],[2,0],[2,0],[4,0],[3,0],[3,0],[4,0],[5,0],[3,0],[2,0],[3,0]],[[1,1],[1,3],[1,1],[1,1],[1,1],[1,1],[0,2],[1,0],[1,1],[0,1],[0,0],[0,1],[0,1],[1,1],[2,0],[2,0],[1,1],[1,0],[0,1],[1,0],[1,0],[0,1],[2,2],[1,2],[0,2],[2,0],[2,1]],[[1,2],[3,2],[1,1],[0,2],[0,2],[0,2],[0,1],[0,2],[0,2],[0,1],[0,1],[1,3],[0,2],[0,2],[0,2],[0,1],[0,2],[0,2],[0,1],[1,1],[0,2],[1,2],[2,3],[1,2],[1,1],[1,1],[0,0]],[[2,1],[1,2],[2,0],[3,0],[3,1],[2,1],[2,0],[2,0],[2,0],[1,0],[2,0],[3,1],[2,0],[2,0],[2,1],[2,0],[2,2],[1,1],[2,1],[2,1],[3,2],[2,1],[3,2],[2,0],[2,0],[3,1],[1,2]],[[3,0],[3,1],[3,1],[2,1],[2,0],[2,1],[3,1],[2,0],[3,0],[2,0],[3,1],[2,1],[2,1],[1,0],[2,1],[4,0],[2,0],[2,0],[2,0],[2,0],[3,1],[2,0],[4,1],[2,1],[5,1],[4,0],[1,0]],[[2,0],[3,2],[2,0],[3,0],[2,0],[2,0],[1,1],[3,0],[2,0],[1,0],[2,0],[3,1],[0,1],[2,0],[3,0],[4,0],[2,0],[2,0],[1,0],[3,1],[2,0],[2,1],[2,2],[3,0],[3,0],[2,0],[1,0]],[[2,0],[4,1],[3,0],[3,0],[3,0],[3,0],[2,0],[3,1],[2,1],[2,0],[3,1],[3,0],[3,0],[3,0],[3,1],[3,1],[3,0],[4,1],[2,0],[2,0],[3,1],[2,1],[3,2],[2,0],[4,1],[1,1],[3,1]],[[3,2],[2,1],[2,1],[2,0],[2,0],[1,1],[2,0],[2,0],[2,1],[1,1],[1,0],[1,1],[2,0],[1,1],[2,0],[2,1],[2,0],[2,0],[1,0],[2,0],[2,0],[2,1],[4,3],[2,1],[2,0],[1,1],[1,0]],[[2,1],[3,1],[2,0],[3,0],[2,0],[2,0],[1,0],[2,0],[2,0],[1,0],[2,0],[2,0],[2,1],[2,0],[3,0],[3,0],[2,1],[3,0],[1,0],[2,0],[3,0],[2,0],[4,2],[1,0],[1,0],[2,0],[2,0]],[[1,0],[2,0],[1,1],[1,2],[0,2],[0,2],[2,2],[1,1],[1,0],[1,1],[1,0],[1,2],[0,0],[1,1],[0,1],[0,2],[1,2],[1,0],[0,0],[0,1],[0,1],[1,2],[2,2],[0,2],[2,1],[2,1],[0,1]],[[3,2],[4,1],[3,0],[2,0],[3,1],[2,1],[2,0],[2,1],[3,0],[2,0],[1,0],[3,0],[2,0],[2,1],[2,0],[2,1],[2,0],[1,1],[3,0],[2,1],[1,1],[2,1],[4,2],[2,1],[1,2],[3,1],[3,1]],[[2,1],[4,1],[3,0],[4,0],[3,0],[3,0],[3,1],[3,0],[2,0],[2,0],[4,0],[3,1],[3,0],[3,0],[3,0],[3,0],[2,0],[1,0],[2,0],[4,0],[4,0],[2,1],[4,3],[2,0],[2,2],[4,0],[2,0]],[[2,0],[1,2],[2,1],[1,2],[1,2],[2,1],[0,0],[3,1],[1,0],[1,0],[1,2],[1,1],[0,2],[2,0],[1,1],[2,1],[2,2],[1,1],[1,1],[2,1],[2,1],[1,1],[4,1],[1,1],[4,2],[2,2],[1,2]],[[2,0],[2,1],[1,1],[1,0],[0,2],[1,2],[2,1],[0,0],[1,0],[1,1],[0,0],[2,1],[0,2],[0,1],[0,1],[0,2],[1,2],[1,2],[1,0],[0,1],[0,2],[1,1],[2,2],[2,2],[1,0],[0,0],[1,0]],[[3,0],[1,0],[3,0],[3,0],[3,0],[2,0],[3,1],[2,0],[2,0],[2,0],[3,1],[2,0],[3,0],[1,1],[4,0],[2,0],[2,0],[2,0],[2,0],[4,0],[4,0],[2,0],[3,1],[2,0],[4,0],[3,0],[2,1]],[[3,1],[3,1],[2,0],[3,0],[3,0],[2,1],[2,0],[3,0],[3,0],[3,0],[4,0],[3,0],[0,1],[2,0],[2,0],[3,1],[2,1],[1,0],[1,0],[2,0],[3,1],[1,0],[3,1],[2,2],[1,1],[3,0],[2,0]],[[1,2],[3,1],[1,2],[0,2],[0,2],[0,2],[0,3],[1,2],[0,2],[1,2],[1,2],[0,1],[0,1],[0,2],[0,2],[0,2],[1,2],[0,1],[1,0],[0,2],[0,2],[1,2],[2,4],[0,2],[2,2],[0,2],[2,1]],[[2,1],[4,0],[2,0],[3,0],[2,1],[2,0],[2,1],[2,0],[2,0],[2,1],[3,1],[2,2],[1,1],[2,1],[3,0],[3,1],[2,1],[1,0],[2,1],[2,1],[3,0],[2,0],[3,1],[2,1],[3,0],[3,0],[1,0]],[[1,1],[2,2],[1,1],[1,2],[2,0],[1,1],[0,2],[1,1],[1,1],[1,0],[1,0],[0,1],[2,1],[1,1],[1,1],[2,0],[2,2],[1,0],[0,1],[1,1],[2,2],[1,1],[4,2],[3,1],[3,1],[0,0],[0,1]],[[1,1],[2,1],[1,1],[2,0],[1,1],[1,1],[1,1],[0,1],[1,0],[0,1],[0,0],[2,0],[0,1],[1,0],[2,0],[1,0],[2,1],[2,0],[1,0],[2,1],[2,1],[1,1],[3,3],[1,1],[1,2],[1,1],[1,2]],[[1,2],[2,3],[1,3],[2,0],[0,3],[0,2],[1,3],[1,2],[0,3],[1,2],[2,1],[0,4],[0,3],[0,2],[0,2],[0,2],[1,3],[1,1],[1,2],[0,3],[0,3],[1,2],[2,4],[1,3],[3,4],[0,3],[2,3]],[[3,0],[1,1],[2,0],[2,0],[3,0],[2,0],[1,1],[1,0],[2,0],[1,1],[2,0],[2,0],[2,0],[1,1],[3,0],[2,0],[3,1],[2,0],[0,1],[3,0],[2,1],[2,1],[2,1],[4,0],[2,1],[1,0],[0,0]],[[1,1],[2,0],[1,1],null,[1,2],[1,2],[0,2],[0,1],[1,1],[0,1],[0,1],[1,3],[1,2],[1,1],[0,2],[0,2],[1,2],[0,2],[1,1],[1,2],[1,2],[0,1],[2,3],[1,2],[1,2],[1,3],[0,1]],[[2,1],[1,2],[1,1],[1,2],[0,2],[1,2],[0,1],[1,0],[1,2],[1,0],[1,2],[2,2],[1,1],[1,2],[0,2],[1,2],[1,2],[1,2],[0,1],[1,2],[1,2],[1,2],[3,2],[1,2],[2,2],[1,2],[2,2]],[[0,1],[1,1],[0,2],[1,2],[0,3],[0,2],[1,1],[1,0],[0,1],[1,1],[0,2],[0,1],[1,3],[0,2],[0,2],[0,2],[0,2],[0,1],[0,1],[0,3],[0,1],[1,2],[2,2],[0,2],[3,3],[0,0],[1,2]],[[1,3],[3,3],[1,2],[1,2],[1,3],[1,2],[0,2],[2,1],[0,2],[0,2],[0,2],[0,2],[0,1],[2,2],[1,2],[1,1],[1,2],[1,2],[1,0],[0,2],[1,2],[1,2],[2,5],[1,1],[1,3],[1,2],[1,0]],[[1,2],[2,2],[1,1],[2,1],[2,1],[2,1],[1,1],[2,1],[2,0],[1,0],[2,1],[2,0],[2,1],[0,0],[2,1],[2,1],[2,2],[1,2],[1,0],[1,1],[2,2],[2,1],[3,3],[1,0],[0,1],[1,1],[1,2]],[[1,2],[2,3],[1,2],[0,2],[0,2],[0,2],[0,2],[0,2],[0,2],[0,1],[0,4],[0,3],[0,3],[1,2],[0,2],[0,2],[0,2],[0,2],[0,1],[1,3],[1,3],[1,2],[1,3],[1,2],[1,1],[2,0],[0,1]],[[1,2],[2,3],[1,2],[2,2],[1,2],[1,1],[0,2],[1,2],[1,2],[0,1],[2,1],[0,2],[1,0],[1,1],[2,1],[2,1],[2,2],[0,1],[0,2],[1,1],[2,2],[1,1],[2,1],[2,3],[2,1],[2,2],[0,2]],[[2,1],[3,2],[1,1],[1,0],[2,1],[1,0],[2,2],[1,0],[2,1],[1,0],[0,2],[1,1],[2,1],[1,1],[1,1],[1,1],[2,2],[1,0],[1,0],[2,1],[1,1],[1,1],[3,2],[2,1],[2,1],[0,0],[1,2]],[[1,2],[1,3],[1,2],[1,2],[1,2],[1,2],[1,3],[1,2],[1,2],[0,2],[0,2],[0,3],[0,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[2,3],[1,2],[4,4],[1,2],[0,3],[1,2],[0,2]],[[1,1],[1,1],[1,1],[2,0],[3,0],[2,0],[2,2],[0,1],[1,1],[0,1],[1,0],[0,1],[2,0],[0,0],[3,0],[2,0],[2,1],[1,1],[0,0],[2,0],[2,0],[2,1],[2,2],[1,0],[3,1],[2,0],[0,0]],[[0,2],[2,3],[1,1],[0,1],[0,2],[1,1],[1,0],[1,1],[1,1],[0,2],[0,2],[1,1],[2,0],[0,1],[0,1],[0,1],[1,1],[0,1],[1,1],[1,1],[1,2],[1,1],[3,1],[2,2],[1,1],[0,1],[1,1]],[[1,1],[2,3],[1,2],[0,2],[1,2],[1,2],[1,3],[1,2],[1,2],[0,2],[0,2],[1,3],[1,2],[1,2],[1,2],[2,3],[1,2],[1,1],[1,2],[1,1],[1,3],[1,2],[3,4],[1,1],[2,1],[0,2],[1,2]],[[2,1],[1,2],[0,1],[1,1],[1,0],[1,1],[1,2],[0,1],[1,2],[1,2],[1,0],[3,1],[1,1],[0,1],[1,0],[2,1],[2,1],[1,0],[0,1],[0,0],[1,0],[1,1],[2,2],[2,1],[1,0],[1,1],[2,1]],[[2,1],[1,2],[0,2],[0,3],[0,3],[0,3],[1,2],[0,2],[0,2],[1,2],[1,0],[0,1],[0,1],[1,1],[0,3],[0,3],[0,2],[1,4],[1,1],[0,3],[0,2],[1,2],[1,3],[0,2],[0,1],[1,2],[0,1]],[[0,2],[1,2],[1,3],[0,3],[0,2],[0,3],[0,2],[0,2],[0,3],[0,1],[1,3],[0,2],[0,1],[1,3],[0,5],[0,4],[0,2],[0,2],[1,1],[0,3],[0,3],[1,2],[2,4],[1,3],[2,1],[0,3],[0,2]],[[2,1],[1,1],[2,1],[1,1],[0,1],[2,1],[2,1],[2,0],[2,0],[1,0],[2,1],[1,1],[1,2],[2,1],[2,1],[2,0],[2,1],[1,0],[0,1],[1,1],[2,0],[2,0],[3,2],[2,0],[1,1],[0,1],[3,2]],[[1,1],[3,1],[1,1],[1,2],[1,2],[1,1],[0,1],[1,2],[1,2],[1,2],[3,2],[1,3],[0,2],[2,1],[1,2],[2,2],[2,2],[0,2],[1,2],[1,1],[1,3],[1,2],[2,3],[1,2],[2,2],[1,2],[2,1]],[[0,0],[1,1],[1,1],[1,0],[0,2],[1,1],[1,0],[0,0],[1,1],[0,1],[1,0],[2,0],[1,0],[1,3],[2,1],[1,0],[1,0],[0,0],[0,0],[1,1],[1,0],[1,1],[2,1],[1,1],[1,1],[0,0],[0,0]],[[0,2],[1,2],[1,1],[1,2],[0,1],[1,1],[1,2],[0,1],[0,0],[0,1],[1,2],[1,1],[1,0],[0,1],[0,1],[1,2],[1,1],[0,1],[1,0],[1,0],[1,2],[1,1],[3,1],[1,1],[1,3],[1,0],[0,1]],[[0,2],[2,3],[0,3],[0,2],[0,3],[0,3],[0,4],[0,2],[0,2],[0,3],[0,2],[1,3],[0,3],[0,1],[0,3],[0,3],[0,3],[0,3],[0,2],[0,3],[0,3],[1,3],[2,4],[0,3],[0,4],[1,4],[0,2]]],"champs":["Alemania","Francia","España","España","España","España","España","Francia","Países Bajos","España","Países Bajos","Portugal","España","Francia","Portugal","Francia","Brasil","España","Brasil","España","Portugal","España","Alemania","Francia","Colombia","Francia","Francia"]};
+
+const P = DATA.participants;
+const M = DATA.matches;       // [n, grupo, fecha, hora, estadio, local, visitante]
+const PR = DATA.preds;        // [matchIdx][pIdx] -> [l,v] | null
+const CH = DATA.champs;
+
+/* ---------- estado efectivo: base + guardado ---------- */
+let RES = {...RESULTADOS_BASE};
+let CAMPEON = CAMPEON_BASE;
+let storageMode = 'archivo';   // 'nube' | 'dispositivo' | 'archivo'
+const KEY = 'casanueva_cup_2026_resultados';
+
+function validPair(r){ return Array.isArray(r) && r.length===2 && Number.isInteger(r[0]) && Number.isInteger(r[1]) && r[0]>=0 && r[1]>=0; }
+
+let lastTs = null;         // timestamp del último estado aplicado (para detectar cambios remotos)
+let lastSavedAt = null;
+
+function backendOn(){ return typeof BACKEND_URL==='string' && BACKEND_URL.trim().startsWith('http'); }
+function backendRef(){ return BACKEND_URL.trim().replace(/\/+$/,'') + '/' + KEY + '.json'; }
+
+async function loadStored(){
+  // 1) Enlace de Claude: nube del artefacto
+  if (window.storage && typeof window.storage.get === 'function') {
+    storageMode = 'nube';
+    try { const r = await window.storage.get(KEY, true); if(r){ const st=JSON.parse(r.value); lastTs=st.ts||''; return st; } return null; }
+    catch(e){ return null; }
+  }
+  // 2) GitHub Pages u otro hosting: backend Firebase
+  if (backendOn()) {
+    storageMode = 'nube';
+    try { const resp = await fetch(backendRef(), {cache:'no-store'}); if(resp.ok){ const st = await resp.json(); if(st){ lastTs=st.ts||''; return st; } } return null; }
+    catch(e){ storageMode='archivo'; return null; }
+  }
+  // 3) Sin nube: este dispositivo
+  try { const r = localStorage.getItem(KEY); storageMode='dispositivo'; if(r){ const st=JSON.parse(r); lastTs=st.ts||''; return st; } return null; }
+  catch(e){ storageMode='archivo'; return null; }
+}
+async function saveStored(obj){
+  const s = JSON.stringify(obj);
+  if (window.storage && typeof window.storage.set === 'function') {
+    try { await window.storage.set(KEY, s, true); storageMode='nube'; lastTs=obj.ts; return true; } catch(e){}
+  }
+  if (backendOn()) {
+    try { const resp = await fetch(backendRef(), {method:'PUT', headers:{'Content-Type':'application/json'}, body:s}); if(resp.ok){ storageMode='nube'; lastTs=obj.ts; return true; } } catch(e){}
+  }
+  try { localStorage.setItem(KEY, s); storageMode='dispositivo'; lastTs=obj.ts; return true; }
+  catch(e){ storageMode='archivo'; return false; }
+}
+function applyStored(st){
+  if(!st) return;
+  if(st.res) for(const k in st.res){ if(validPair(st.res[k])) RES[k]=st.res[k]; }
+  if(st.champ) CAMPEON = st.champ;
+  if(st.ts){ lastSavedAt = st.ts; }
+}
+
+/* Relee la nube y, si alguien guardó nuevos resultados, actualiza
+   la página sola — sin recargar a mano. Aplica en modo nube
+   (enlace de Claude o backend Firebase). */
+async function refreshFromCloud(){
+  let st = null;
+  if (window.storage && typeof window.storage.get === 'function') {
+    try { const r = await window.storage.get(KEY, true); if(r) st = JSON.parse(r.value); } catch(e){ return; }
+  } else if (backendOn()) {
+    try { const resp = await fetch(backendRef(), {cache:'no-store'}); if(resp.ok) st = await resp.json(); } catch(e){ return; }
+  } else { return; }
+  if(!st || (st.ts||'')===(lastTs||'')) return;
+  lastTs = st.ts||'';
+  RES = {...RESULTADOS_BASE}; CAMPEON = CAMPEON_BASE;
+  applyStored(st);
+  renderAll();
+  if(capBuilt) fillCapture();
+}
+
+/* ---------- cálculo ---------- */
+const sign=(a,b)=> a>b?1:(a<b?-1:0);
+function ptsFor(pred, real){
+  if(!real) return null;
+  if(!pred) return 0;
+  if(pred[0]===real[0] && pred[1]===real[1]) return 3;
+  return sign(pred[0],pred[1])===sign(real[0],real[1]) ? 1 : 0;
+}
+function realOf(i){ const r = RES[M[i][0]]; return validPair(r) ? r : null; }
+
+let totals=[], ranking=[], played=0, lastPlayed=null;
+function compute(){
+  totals = P.map((name,pi)=>{
+    let pts=0,e3=0,e1=0,e0=0,champBonus=0;
+    for(let i=0;i<M.length;i++){
+      const p = ptsFor(PR[i][pi], realOf(i));
+      if(p===null) continue;
+      pts+=p; if(p===3)e3++; else if(p===1)e1++; else e0++;
+    }
+    if(CAMPEON && CH[pi]===CAMPEON){ champBonus=10; pts+=10; }
+    return {pi,name,pts,e3,e1,e0,champBonus,champ:CH[pi]};
+  });
+  ranking = [...totals].sort((a,b)=> b.pts-a.pts || b.e3-a.e3 || a.name.localeCompare(b.name,'es'));
+  played = M.reduce((s,_,i)=> s + (realOf(i)?1:0), 0);
+  lastPlayed = null;
+  for(let i=0;i<M.length;i++) if(realOf(i)) lastPlayed = M[i][2];
+}
+
+const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shortName = n => n.length>26 ? n.slice(0,24)+'…' : n;
+
+/* ---------- renders ---------- */
+function renderHeader(){
+  document.getElementById('stat-played').textContent = played;
+  document.getElementById('stat-update').innerHTML = lastPlayed ? `Última jornada: <b>${esc(lastPlayed)}</b>` : `Arranca <b>Jue 11 Jun</b>`;
+}
+function renderBoard(){
+  const medals=['🥇','🥈','🥉'];
+  document.getElementById('boardbody').innerHTML = ranking.map((r,idx)=>`
+    <div class="brow" data-pi="${r.pi}" tabindex="0" role="button" aria-label="Ver quiniela de ${esc(r.name)}">
+      <span class="pos ${idx<3?'medal':''}">${idx<3?medals[idx]:idx+1}</span>
+      <span class="pname">${esc(shortName(r.name))}<small>Campeón: ${esc(r.champ)}${r.champBonus?` · +10 ✓`:''}</small></span>
+      <span class="scoretile">${r.pts}</span>
+      <span class="statmini">${r.e3}</span>
+      <span class="statmini">${r.e1}</span>
+    </div>`).join('');
+}
+function renderMatches(){
+  let html='', curDay='';
+  for(let i=0;i<M.length;i++){
+    const [n,g,fecha,hora,estadio,loc,vis]=M[i];
+    if(fecha!==curDay){ if(curDay) html+='</div>'; html+=`<div class="daygroup"><div class="dayhead">${esc(fecha)}</div>`; curDay=fecha; }
+    const real=realOf(i);
+    html+=`
+    <div class="match">
+      <div class="mrow" data-i="${i}" tabindex="0" role="button" aria-expanded="false">
+        <span class="mnum">${esc(g)}<b>#${n}</b></span>
+        <span class="team home">${esc(loc)}</span>
+        ${real?`<span class="mscore">${real[0]} – ${real[1]}</span>`:`<span class="mscore pend">${esc(hora)}</span>`}
+        <span class="team">${esc(vis)}</span>
+        <span class="chev">▼</span>
+      </div>
+      <div class="mmeta">${esc(estadio)} · ${esc(hora)} hrs CDMX</div>
+      <div class="mdetail" data-i="${i}"></div>
+    </div>`;
+  }
+  html+='</div>';
+  document.getElementById('matchlist').innerHTML=html;
+}
+function buildDetail(i){
+  const real=realOf(i);
+  return '<div class="pickgrid">'+P.map((name,pi)=>{
+    const pred=PR[i][pi];
+    const p=ptsFor(pred,real);
+    const cls= real===null ? 'pp' : (p===3?'p3':p===1?'p1':'p0');
+    const txt= pred ? `${pred[0]}–${pred[1]}` : '—';
+    const pts= real===null ? '' : ` <small>(${p})</small>`;
+    return `<div class="pick ${cls}"><span class="nm">${esc(shortName(name))}</span><span class="sc">${txt}${pts}</span></div>`;
+  }).join('')+'</div>';
+}
+function renderPerson(pi){
+  const t=totals.find(x=>x.pi===pi);
+  const pos=ranking.findIndex(r=>r.pi===pi)+1;
+  document.getElementById('personcard').innerHTML=`
+    <div class="pcard">
+      <h3>${esc(t.name)}</h3>
+      <div class="pstats">
+        <div class="pstat"><b>${t.pts}</b><span>Puntos</span></div>
+        <div class="pstat"><b>${pos}º</b><span>Posición</span></div>
+        <div class="pstat"><b>${t.e3}</b><span>Exactos</span></div>
+        <div class="pstat"><b>${t.e1}</b><span>Resultados</span></div>
+      </div>
+      <div class="pchamp">Apuesta a campeón: <b>${esc(t.champ)}</b> (+10 pts si gana)${t.champBonus?' — <b>¡Acertó! +10 ✓</b>':''}</div>
+    </div>`;
+  let rows='';
+  for(let i=0;i<M.length;i++){
+    const [n,g,fecha,,,loc,vis]=M[i];
+    const real=realOf(i), pred=PR[i][pi], p=ptsFor(pred,real);
+    const cls = real===null?'ptsP':(p===3?'pts3':p===1?'pts1':'pts0');
+    rows+=`<tr>
+      <td class="num">#${n}</td>
+      <td>${esc(loc)} vs ${esc(vis)}<br><small style="color:var(--chalk-dim)">${esc(g)} · ${esc(fecha)}</small></td>
+      <td class="num">${pred?pred[0]+'–'+pred[1]:'—'}</td>
+      <td class="num">${real?real[0]+'–'+real[1]:'·'}</td>
+      <td class="num ${cls}">${real===null?'—':p}</td>
+    </tr>`;
+  }
+  document.getElementById('persontable').innerHTML=
+    `<thead><tr><th>#</th><th>Partido</th><th>Pron.</th><th>Real</th><th>Pts</th></tr></thead><tbody>${rows}</tbody>`;
+}
+function renderChamp(){
+  const byTeam={};
+  totals.forEach(t=>{ (byTeam[t.champ]=byTeam[t.champ]||[]).push(t.name); });
+  const order=Object.entries(byTeam).sort((a,b)=> b[1].length-a[1].length || a[0].localeCompare(b[0],'es'));
+  document.getElementById('champgrid').innerHTML = order.map(([team,names])=>`
+    <div class="champcard ${CAMPEON===team?'win':''}">
+      <h3>${esc(team)} <small>${names.length} ${names.length===1?'apuesta':'apuestas'}${CAMPEON===team?' · 🏆':''}</small></h3>
+      <p>${names.map(esc).join(' · ')}</p>
+    </div>`).join('');
+  document.getElementById('champnote').innerHTML = CAMPEON
+    ? `Campeón: <b style="color:var(--gold-soft)">${esc(CAMPEON)}</b> — bono de 10 pts ya aplicado en la tabla.`
+    : 'El bono se suma cuando termine el Mundial.';
+}
+function renderAll(){
+  compute();
+  renderHeader(); renderBoard(); renderMatches(); renderChamp();
+  renderPerson(+document.getElementById('personsel').value);
+}
+
+/* ---------- interacción ---------- */
+const sel=document.getElementById('personsel');
+sel.innerHTML = P.map((n,pi)=>({n,pi})).sort((a,b)=>a.n.localeCompare(b.n,'es'))
+  .map(t=>`<option value="${t.pi}">${esc(t.n)}</option>`).join('');
+sel.addEventListener('change', ()=> renderPerson(+sel.value));
+
+document.getElementById('boardbody').addEventListener('click', e=>{ const row=e.target.closest('.brow'); if(row) openPerson(+row.dataset.pi); });
+document.getElementById('boardbody').addEventListener('keydown', e=>{ if(e.key==='Enter'){ const row=e.target.closest('.brow'); if(row) openPerson(+row.dataset.pi); } });
+function openPerson(pi){ sel.value=pi; renderPerson(pi); switchTab('persona'); window.scrollTo({top:0}); }
+
+const matchWrap=document.getElementById('matchlist');
+matchWrap.addEventListener('click', e=>{ const r=e.target.closest('.mrow'); if(r) toggleMatch(r); });
+matchWrap.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ const r=e.target.closest('.mrow'); if(r){ e.preventDefault(); toggleMatch(r);} } });
+function toggleMatch(rowEl){
+  const card=rowEl.closest('.match');
+  const open=card.classList.toggle('open');
+  rowEl.setAttribute('aria-expanded', open);
+  if(open){
+    const det=card.querySelector('.mdetail');
+    if(!det.dataset.done){ det.innerHTML=buildDetail(+rowEl.dataset.i); det.dataset.done='1'; }
+  }
+}
+
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on', b.dataset.t===id));
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on', s.id===id));
+}
+document.getElementById('tabs').addEventListener('click', e=>{ const b=e.target.closest('.tab'); if(b) switchTab(b.dataset.t); });
+
+/* ---------- pestaña Capturar ---------- */
+let capBuilt=false;
+function unlockCapture(){
+  document.getElementById('capgate').style.display='none';
+  document.getElementById('capbody').style.display='block';
+  if(!capBuilt){ buildCapture(); capBuilt=true; }
+}
+document.getElementById('pinbtn').addEventListener('click', tryPin);
+document.getElementById('pinbox').addEventListener('keydown', e=>{ if(e.key==='Enter') tryPin(); });
+function tryPin(){
+  const ok = document.getElementById('pinbox').value === CLAVE_CAPTURA;
+  document.getElementById('pinerr').style.visibility = ok?'hidden':'visible';
+  if(ok) unlockCapture();
+}
+
+function buildCapture(){
+  let html='', curDay='';
+  for(const m of M){
+    if(m[2]!==curDay){ html+=`<div class="capday">${esc(m[2])}</div>`; curDay=m[2]; }
+    html+=`<div class="caprow">
+      <span style="color:var(--chalk-dim);font-family:'Barlow Condensed';font-weight:600">#${m[0]}</span>
+      <span class="lbl">${esc(m[5])} vs ${esc(m[6])}<br><small>${esc(m[1])} · ${esc(m[3])} hrs</small></span>
+      <input type="number" min="0" max="20" inputmode="numeric" id="cl${m[0]}" placeholder="·" aria-label="Goles ${esc(m[5])}">
+      <span class="dash">–</span>
+      <input type="number" min="0" max="20" inputmode="numeric" id="cv${m[0]}" placeholder="·" aria-label="Goles ${esc(m[6])}">
+    </div>`;
+  }
+  document.getElementById('caprows').innerHTML=html;
+  const allTeams=[...new Set(M.flatMap(m=>[m[5],m[6]]))].sort((a,b)=>a.localeCompare(b,'es'));
+  document.getElementById('capchamp').innerHTML='<option value="">— Aún no hay campeón —</option>'+allTeams.map(t=>`<option>${esc(t)}</option>`).join('');
+  fillCapture();
+  updateStorageNote();
+  document.getElementById('savebtn').addEventListener('click', onSave);
+  document.getElementById('dlbtn').addEventListener('click', onDownload);
+}
+function fillCapture(){
+  for(const m of M){
+    const r=RES[m[0]];
+    document.getElementById('cl'+m[0]).value = validPair(r)?r[0]:'';
+    document.getElementById('cv'+m[0]).value = validPair(r)?r[1]:'';
+  }
+  document.getElementById('capchamp').value = CAMPEON || '';
+}
+function collectCapture(){
+  const res={};
+  for(const m of M){
+    const a=document.getElementById('cl'+m[0]).value, b=document.getElementById('cv'+m[0]).value;
+    if(a!=='' && b!=='') res[m[0]]=[+a,+b];
+  }
+  return {res, champ: document.getElementById('capchamp').value || null, ts:new Date().toISOString()};
+}
+function updateStorageNote(){
+  let msg;
+  if(storageMode==='nube'){
+    msg = backendOn()
+      ? '☁️ Guardado permanente en tu nube de Firebase. Capturas una vez y queda para siempre; todos los que abran la página en GitHub ven los resultados sin que toques el archivo ni vuelvas a subir nada. Las páginas abiertas se actualizan solas cada 30 s.'
+      : '☁️ Guardado permanente en la nube de la página. Capturas una vez y queda para siempre; todos los que abran la liga ven los resultados sin que toques el archivo.';
+  } else if(storageMode==='dispositivo'){
+    msg = '📱 No detecté nube configurada, así que se guarda en este navegador/dispositivo. Para guardado permanente y compartido en GitHub Pages, configura BACKEND_URL con tu base de Firebase (instrucciones al final del archivo). Mientras tanto, "Descargar HTML actualizado" conserva los marcadores dentro del archivo.';
+  } else {
+    msg = '⚠️ No se pudo guardar (revisa BACKEND_URL / conexión). Usa "Descargar HTML actualizado" para conservar los marcadores dentro del archivo.';
+  }
+  document.getElementById('storagemode').textContent = msg;
+}
+async function onSave(){
+  const st = collectCapture();
+  RES = {...RESULTADOS_BASE}; CAMPEON = CAMPEON_BASE;
+  applyStored(st);
+  const ok = await saveStored(st);
+  renderAll();
+  fillCapture();
+  updateStorageNote();
+  const msg=document.getElementById('savemsg');
+  if(ok && storageMode==='nube') msg.textContent = `Guardado para siempre ✓ ${played}/72 partidos`;
+  else if(ok) msg.textContent = `Guardado en este dispositivo ✓ ${played}/72`;
+  else msg.textContent = 'No se pudo guardar aquí — descarga el HTML actualizado';
+  setTimeout(()=>{ msg.textContent=''; }, 6000);
+}
+function buildResultBlock(){
+  let lines=[];
+  for(const m of M){
+    const r=RES[m[0]];
+    if(validPair(r)) lines.push(`  ${m[0]}:[${r[0]},${r[1]}],   // ${m[5]} ${r[0]}-${r[1]} ${m[6]} (${m[2]})`);
+  }
+  return { res:`const RESULTADOS_BASE = {\n${lines.join('\n')}\n};`, champ:`const CAMPEON_BASE = ${CAMPEON?JSON.stringify(CAMPEON):'null'};` };
+}
+async function onDownload(){
+  const st = collectCapture();
+  RES = {...RESULTADOS_BASE}; CAMPEON = CAMPEON_BASE; applyStored(st);
+  renderAll(); fillCapture();
+  const blk = buildResultBlock();
+  let src = null;
+  try {
+    const resp = await fetch(location.href, {cache:'no-store'});
+    if(resp.ok) src = await resp.text();
+  } catch(e){}
+  if(src && /const RESULTADOS_BASE = \{[\s\S]*?\};/.test(src)){
+    src = src.replace(/const RESULTADOS_BASE = \{[\s\S]*?\};/, blk.res)
+             .replace(/const CAMPEON_BASE = .*?;/, blk.champ);
+    const blob = new Blob([src], {type:'text/html'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Casanueva_Cup_2026.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+  } else {
+    const ta=document.getElementById('capcode');
+    ta.style.display='block';
+    ta.value = blk.res + '\n' + blk.champ;
+    ta.focus(); ta.select();
+    try{ navigator.clipboard.writeText(ta.value); }catch(e){}
+    alert('Desde aquí no se puede generar la descarga automática. Te dejé el bloque de código listo (y copiado): pégalo sobre el bloque RESULTADOS_BASE del archivo HTML.');
+  }
+}
+
+/* ---------- arranque ---------- */
+renderAll();
+loadStored().then(st=>{
+  if(st){ applyStored(st); renderAll(); if(capBuilt) fillCapture(); }
+  if(capBuilt) updateStorageNote();
+  // En modo nube (enlace de Claude o backend Firebase): revisa cada 30 s
+  // si alguien guardó nuevos resultados y actualiza la página sola.
+  if(storageMode==='nube'){
+    setInterval(refreshFromCloud, 30000);
+    document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) refreshFromCloud(); });
+  }
+});
+</script>
+<!--
+================================================================
+  CÓMO CONECTAR EL GUARDADO EN LA NUBE (para GitHub Pages)
+  ~5 minutos, una sola vez. Gratis.
+================================================================
+
+  1. Entra a  https://console.firebase.google.com  con tu cuenta
+     de Google y pulsa "Crear un proyecto" (Create a project).
+     Ponle un nombre (ej. "casanueva-cup"). Puedes desactivar
+     Google Analytics para ir más rápido. Crea el proyecto.
+
+  2. En el menú izquierdo: Compilación (Build) → Realtime Database
+     → "Crear base de datos" (Create Database).
+       - Ubicación: la que prefieras (ej. Estados Unidos o Europa).
+       - Reglas de seguridad: elige "Iniciar en modo de prueba"
+         (start in test mode) y crea.
+
+  3. IMPORTANTE — que no caduque a mitad del torneo:
+     Ve a la pestaña "Reglas" (Rules) de la base de datos,
+     borra lo que haya y pega EXACTAMENTE esto, luego "Publicar":
+
+       {
+         "rules": {
+           ".read": true,
+           ".write": true
+         }
+       }
+
+  4. Arriba de la base de datos verás su URL. Cópiala. Se ve así:
+       https://casanueva-cup-default-rtdb.firebaseio.com
+     o con región:
+       https://casanueva-cup-default-rtdb.europe-west1.firebasedatabase.app
+
+  5. En este archivo, arriba, pega esa URL en la línea:
+       const BACKEND_URL = "AQUÍ_TU_URL";
+     Guarda el archivo y súbelo a GitHub (es la ÚNICA vez que
+     editas el archivo). A partir de ahí, captura desde la
+     pestaña "Capturar": queda guardado para siempre y todos
+     lo ven.
+
+  Nota: con estas reglas, cualquiera que conozca la URL podría
+  escribir en la base. Para una quiniela familiar suele bastar,
+  y la pestaña "Capturar" pide clave. Como respaldo, el botón
+  "Descargar HTML actualizado" siempre conserva una copia con
+  los marcadores dentro del archivo.
+================================================================
+-->
+</body>
+</html>
